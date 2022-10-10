@@ -1,5 +1,4 @@
 <?php
-
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NoteController;
 
@@ -14,15 +13,19 @@ use App\Http\Controllers\NoteController;
 |
 */
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
-
-Route::get('/notes', [NoteController::class, 'index']); 
-
-Route::get('/notes/create', [NoteController::class, 'create']);
-
-Route::post('/notes', [NoteController::class, 'store']);
+Route::get('/', function () {
+    return view('welcome');
+});
+Route::get('/notes', [NoteController::class, 'index']);
+Route::get('/create', [NoteController::class, 'create']);
+Route::get('/notes', [NoteController::class, 'store']);
 
 
 Route::resource('/notes', NoteController::class)->middleware(['auth']);
+
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+require __DIR__.'/auth.php';
