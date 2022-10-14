@@ -38,17 +38,47 @@ public function store(Request $request)
 
     return to_route('notes.index');
 }
-public function show($id){
-
+public function show($uuid){
+    $note = Note::where('uuid', $uuid)->where('user_id', Auth::id())->firstOrFail();
+    return view('notes.show')-> with('note', $note);
 }
-public function edit($id){
 
+public function edit(Note $note){
+    if($note->user_id != Auth::id()){
+        return abort(403);
+    }
+
+    return view('notes.edit')-> with('note', $note);
 }
-public function update(Request $request, $id){
 
+public function update(Request $request, Note $note){
+
+    if($note->user_id != Auth::id()){
+        return abort(403);
+    }
+
+    $request->validate([
+        'title'=> 'required|max:120',
+        'text'=> 'required'
+        ]);
+
+        $note->update([
+            'title' => $request->title,
+            'text' => $request->text
+        ]);
+        return to_route('notes.show', $note->uuid)->with('success','Note updated successfully');
+   
 }
-public function destroy($id){
+public function destroy(Note $note)
+{
+    if($note->user_id != Auth::id()){
+        return abort(403);
+    }
 
+
+    $note->delete();
+
+    return to_route('notes.index')->with('success', 'Note deleted successfully');
 }
 
 }
